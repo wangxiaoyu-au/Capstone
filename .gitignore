@@ -1,3 +1,5 @@
 *.pyc
 */__pycache__
 spark_test_task1/movies
+.fabenv
+.vscode
