@@ -1,3 +1,4 @@
 fabric
 pyyaml
 python-benedict
+psutil

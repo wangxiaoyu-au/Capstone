@@ -7,7 +7,8 @@ import json
 import yaml
 import subprocess
 from benedict import benedict
-import  
+import psutil 
+
 
 def get_config(filename):
     return os.path.join(Path(__file__).resolve().parent.parent.parent, "config", filename)
@@ -26,9 +27,9 @@ def start(ctx, port_forward="portforward.yaml"):
 @task
 def stop(ctx):
     for process in psutil.process_iter():
-        cmdline = process.cmdline
+        cmdline = process.cmdline()
         if "ssh" in cmdline and "-fNL" in cmdline:
-            print("Killing ", process.pid, process.cmdline)
+            print("Killing ", process.pid, cmdline)
             process.kill()
 
 
