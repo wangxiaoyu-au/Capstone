@@ -70,13 +70,14 @@ def start_monitor(ctx, task_folder, monitor_command):
     ctx.run("sudo rm -rf " + full_task_folder)
     ctx.run("mkdir -p " + full_task_folder)
     ctx.run("cd " + full_task_folder)
-    ctx.sudo(task_name + " &> /dev/null &", pty=False)
+    ctx.sudo(monitor_command + " &> /dev/null &", pty=False)
     
 
 @task
 def stop(ctx, port_forward='portforward.yaml'):
-    print("TODO: implement stop of remote monitoring")
-
+    for c in get_hosts(ctx, port_forward):
+        c.run("hostname")
+        c.sudo("kill $(ps aux | grep 'perf' | awk '{print $2}') ")
 
 @task
 def status(ctx, port_forward='portforward.yaml'):
@@ -95,7 +96,7 @@ def get_hosts(ctx, port_forward='portforward.yaml'):
     ports = benedict.from_yaml(config_file)
     private_key = get_config(os.path.join('private_key', ports['key']))
     for port, ip in ports['mapping'].items():
-        hosts.append('localhost:' + str(ip))
+        hosts.append('localhost:' + str(port))
 
     print("user", ports['username'], "key_filename", private_key)
 
