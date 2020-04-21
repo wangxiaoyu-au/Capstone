@@ -1,0 +1,9 @@
+# Monitoring configuration
+
+# perf commandline commands
+perf:
+  interval: 10   # milliseconds, sampling period
+  period: 10    # seconds, every period, it will generate a new perf.data file
+
+local: "data"
+hdfs: "hdfs://192.168.122.60:90000" 

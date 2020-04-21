@@ -1,0 +1,7 @@
+---
+key: "dev_key"
+username: "xiaoyu"
+mapping:
+  10000: "192.168.122.53" # spark master
+  10001: "192.168.122.108" # node
+
