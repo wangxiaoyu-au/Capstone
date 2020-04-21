@@ -20,7 +20,7 @@ def get_app_config(app_config="app.yaml"):
 
 
 @task
-def start_perf(ctx, task_name = 'noname', port_forward='portforward.yaml',app_config="app.yaml", duration=300):
+def start(ctx, task_name = 'noname', port_forward='portforward.yaml',app_config="app.yaml", duration=300):
     """
 
     duration seconds, 0 means no end time. Else put a duration here for monitoring, such if you want to launch monitoring for 10 minutes, put 600 here.
