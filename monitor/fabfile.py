@@ -66,18 +66,21 @@ def start_perf(ctx, task_name = 'noname', port_forward='portforward.yaml',app_co
 
 @task
 def start_monitor(ctx, task_folder, monitor_command):
+    ctx.run("hostname")
     full_task_folder = "~/Capstone/" + task_folder
     ctx.run("sudo rm -rf " + full_task_folder)
     ctx.run("mkdir -p " + full_task_folder)
-    ctx.run("cd " + full_task_folder)
-    ctx.sudo(monitor_command + " &> /dev/null &", pty=False)
+    ctx.run("echo \"sudo " + monitor_command + " &> /dev/null &\" >" + full_task_folder + "/start.sh")
+    ctx.run("chmod +x " + full_task_folder + "/start.sh");
+    ctx.run("cd " + full_task_folder + " && ./start.sh", pty=False)
     
 
 @task
 def stop(ctx, port_forward='portforward.yaml'):
     for c in get_hosts(ctx, port_forward):
         c.run("hostname")
-        c.sudo("kill $(ps aux | grep 'perf' | awk '{print $2}') ")
+        c.sudo("pkill -f perf")
+        c.run("ps aux | grep perf")
 
 @task
 def status(ctx, port_forward='portforward.yaml'):
