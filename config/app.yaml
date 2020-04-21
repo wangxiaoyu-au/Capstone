@@ -1,9 +1,13 @@
 # Monitoring configuration
 
-# perf commandline commands
-perf:
-  interval: 10   # milliseconds, sampling period
-  period: 10    # seconds, every period, it will generate a new perf.data file
+# perf commandline template
+# See full pararmeters here https://github.com/torvalds/linux/blob/master/tools/perf/Documentation/perf-record.txt
+# contorl the parameters here
+# -F 	Profile at this frequency. How many sampling per second
+# period is the parameter passed in from monitoring part, it means how many seconds switch to next file.
+# Monitor module will periodically upload monitoring files into HDFS, then delete the source file.
+perf: "perf record -F 10 --switch-output={period}s"
+period: 10
 
 local: "data"
 hdfs: "hdfs://192.168.122.60:90000" 

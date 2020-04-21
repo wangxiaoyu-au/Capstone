@@ -34,6 +34,14 @@ def stop(ctx):
 
 
 @task
+def status(ctx):
+    for process in psutil.process_iter():
+        cmdline = process.cmdline()
+        if "ssh" in cmdline and "-fNL" in cmdline:
+            print("Running ", process.pid, cmdline)
+
+
+@task
 def map(ctx, ip, username, keyfile, local_port, remote_port=22):
     cmd_template = 'ssh -oStrictHostKeyChecking=no -fNL {local_port}:localhost:{remote_port} {username}@{remote_ip} -i {keyfile}'
     print('Mapping', ip, ' on', remote_port, ' to localhost on', local_port)

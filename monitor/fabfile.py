@@ -20,7 +20,7 @@ def get_app_config(app_config="app.yaml"):
 
 
 @task
-def start(ctx, task_name = 'noname', port_forward='portforward.yaml',app_config="app.yaml", duration=300):
+def start_perf(ctx, task_name = 'noname', port_forward='portforward.yaml',app_config="app.yaml", duration=300):
     """
 
     duration seconds, 0 means no end time. Else put a duration here for monitoring, such if you want to launch monitoring for 10 minutes, put 600 here.
@@ -35,30 +35,59 @@ def start(ctx, task_name = 'noname', port_forward='portforward.yaml',app_config=
     endtime = now + timedelta(seconds=duration)
     
     # monitoring data file
-    monitor_file = now.strftime("%Y-%m-%d-%H-%M")
+    task_folder = task_name + "-" + now.strftime("%Y-%m-%d-%H")
     monitor_group = 0
-    period = app_cfg['perf']['period']
-    interval = app_cfg['perf']['interval']
+    period = app_cfg['period']
+    perf = app_cfg['perf'].format(
+        period = period
+    )
+    
+    print("start task: ", task_folder)
+    print("perf command: ", perf)
+    for c in group:
+        start_monitor(c, task_folder, perf )
 
-    while now < endtime:
-        for c in group:
-            output_file = task_name + "-" + monitor_file + "-" + "group" +  str(monitor_group)
-            perf(ctx, output_file, interval, period)
-        print("Sleep ", period, "seconds")
-        time.sleep(period)
-        for c in group:
-            output_file = task_name + "-" + monitor_file + "-" + "group" +  str(monitor_group)
-            get_remote_file(ctx, output_file, app_cfg['local'], app_cfg['hdfs'])
+    print("Perf started.")
 
-        monitor_group += 1
-        now = datetime.now()
-        print("Next loop", monitor_group)
+    # while now < endtime:
+    #     for c in group:
+    #         output_file = task_name + "-" + monitor_file + "-" + "group" +  str(monitor_group)
+    #         perf(ctx, output_file, interval, period)
+    #     print("Sleep ", period, "seconds")
+    #     time.sleep(period)
+    #     for c in group:
+    #         output_file = task_name + "-" + monitor_file + "-" + "group" +  str(monitor_group)
+    #         get_remote_file(ctx, output_file, app_cfg['local'], app_cfg['hdfs'])
 
-    print("monitoring finished.")
+    #     monitor_group += 1
+    #     now = datetime.now()
+    #     print("Next loop", monitor_group)
 
 
 @task
-def get_hosts(ctx,port_forward='portforward.yaml'):
+def start_monitor(ctx, task_folder, monitor_command):
+    full_task_folder = "~/Capstone/" + task_folder
+    ctx.run("sudo rm -rf " + full_task_folder)
+    ctx.run("mkdir -p " + full_task_folder)
+    ctx.run("cd " + full_task_folder)
+    ctx.sudo(task_name + " &> /dev/null &", pty=False)
+    
+
+@task
+def stop(ctx, port_forward='portforward.yaml'):
+    print("TODO: implement stop of remote monitoring")
+
+
+@task
+def status(ctx, port_forward='portforward.yaml'):
+    print("TODO: implement status of remote monitoring")
+    for c in get_hosts(ctx, port_forward):
+        c.run("hostname")
+        c.run("ps aux | grep perf")
+
+
+@task
+def get_hosts(ctx, port_forward='portforward.yaml'):
     hosts = []
     # Get mapping ports
     config_file = get_config(port_forward)
@@ -70,8 +99,7 @@ def get_hosts(ctx,port_forward='portforward.yaml'):
 
     print("user", ports['username'], "key_filename", private_key)
 
-    return hosts
-    # return Group(*hosts, user = ports['username'], connect_kwargs = {"key_filename":private_key})  
+    return Group(*hosts, user = ports['username'], connect_kwargs = {"key_filename":private_key})  
 
 
 @task
