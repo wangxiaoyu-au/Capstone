@@ -4,46 +4,39 @@ from fabric import SerialGroup as Group
 from pathlib import Path
 import os
 import json
+import yaml
+import subprocess
+from benedict import benedict
+import psutil 
+
 
 @task
 def connect(ctx):
-    with Connection(
-        '127.0.0.1:10002', 
-        # port = 10000,     
-        user = "xiaoyu",
-        connect_kwargs={"password": "1"}        
-        ) as C:
+    # install jdk8 test
+    #C.run("sudo apt-get update")
+    #C.run("sudo apt-get upgrade")
+    #C.run("sudo apt-get install openjdk-8-jdk -y")
 
-        # connection building test
-        C.run("hostname")    
-        
-        # install MySQL
-        install_mysql(C)
-            
-        # install jdk8 test
-        #C.run("sudo apt-get update")
-        #C.run("sudo apt-get upgrade")
-        #C.run("sudo apt-get install openjdk-8-jdk -y")
+    # return the installed java version 
+    #javaVersion = C.run("javac -version")
 
-        # return the installed java version 
-        #javaVersion = C.run("javac -version")
+    # install spark test
+    #C.run("mkdir software")
+    #C.run("cd software")
+    #C.run("sudo wget https://downloads.apache.org/spark/spark-2.4.5/spark-2.4.5-bin-hadoop2.7.tgz -O software/spark-2.4.5-bin-hadoop2.7.tgz")
+    #C.run("cd software && tar -xvf spark-2.4.5-bin-hadoop2.7.tgz")
+    #C.run("sudo echo \"SPARK_HOME=/home/wangxiaoyu.au/software/spark-2.4.5-bin-hadoop2.7\" | sudo tee -a /etc/environment")
+    
+    # install scala test
+    # C.run("sudo wget https://downloads.lightbend.com/scala/2.12.8/scala-2.12.8.deb -O software/scala-2.12.8.deb")
+    # C.run("cd software && sudo dpkg -i scala-2.12.8.deb")
+    # C.run("$SPARK_HOME/bin/spark-shell")
+    # C.run("echo \"PATH=$PATH:$SPARK_HOME/bin\" >> ~/.bashrc") 
+    # C.run("source ~/.bashrc")
+    #C.run("mkdir /home/wangxiaoyu.au/MySparkConf")
+    #C.put('C:/Projects/test_1/spark.master.conf', '/home/wangxiaoyu.au/MySparkConf/spark.master.conf')
 
-        # install spark test
-        #C.run("mkdir software")
-        #C.run("cd software")
-        #C.run("sudo wget https://downloads.apache.org/spark/spark-2.4.5/spark-2.4.5-bin-hadoop2.7.tgz -O software/spark-2.4.5-bin-hadoop2.7.tgz")
-        #C.run("cd software && tar -xvf spark-2.4.5-bin-hadoop2.7.tgz")
-        #C.run("sudo echo \"SPARK_HOME=/home/wangxiaoyu.au/software/spark-2.4.5-bin-hadoop2.7\" | sudo tee -a /etc/environment")
-        
-        # install scala test
-        # C.run("sudo wget https://downloads.lightbend.com/scala/2.12.8/scala-2.12.8.deb -O software/scala-2.12.8.deb")
-        # C.run("cd software && sudo dpkg -i scala-2.12.8.deb")
-        # C.run("$SPARK_HOME/bin/spark-shell")
-        # C.run("echo \"PATH=$PATH:$SPARK_HOME/bin\" >> ~/.bashrc") 
-        # C.run("source ~/.bashrc")
-        #C.run("mkdir /home/wangxiaoyu.au/MySparkConf")
-        #C.put('C:/Projects/test_1/spark.master.conf', '/home/wangxiaoyu.au/MySparkConf/spark.master.conf')
-      
+
 @task
 def install_jdk8(ctx):
     ctx.sudo("apt-get update -y")
@@ -51,14 +44,17 @@ def install_jdk8(ctx):
     ctx.sudo("apt-get install openjdk-8-jdk -y")
     ctx.run("javac -version") 
 
+
 @task 
-def install_spark(ctx):
+def install_spark(ctx, master_ip):
     ctx.sudo("apt-get remove scala-library scala")
     ctx.run("mkdir software")
     ctx.run("wget https://downloads.apache.org/spark/spark-2.4.5/spark-2.4.5-bin-hadoop2.7.tgz -O software/spark-2.4.5-bin-hadoop2.7.tgz")
     ctx.run("cd software && tar -xvf spark-2.4.5-bin-hadoop2.7.tgz")
     ctx.run("echo 'SPARK_HOME=/home/xiaoyu/software/spark-2.4.5-bin-hadoop2.7' >> ~/.bashrc")
     ctx.run("echo 'PATH=$PATH:$SPARK_HOME/bin' >> ~/.bashrc") 
+    ctx.run("cp /home/xiaoyu/software/spark-2.4.5-bin-hadoop2.7/conf/spark-env.sh.template /home/xiaoyu/software/spark-2.4.5-bin-hadoop2.7/conf/spark-env.sh")
+    ctx.run("echo 'export SPARK_MASTER_HOST=\"" + master_ip + "\"' >> /home/xiaoyu/software/spark-2.4.5-bin-hadoop2.7/conf/spark-env.sh")
     
 
 @task
@@ -73,13 +69,16 @@ def pool_test(ctx):
 
 
 @task
-def spark_master_launch(ctx):
-    ctx.run("/home/xiaoyu/software/spark-2.4.5-bin-hadoop2.7/sbin/start-master.sh")
+def spark_master_action(ctx, action):
+    ctx.run("/home/xiaoyu/software/spark-2.4.5-bin-hadoop2.7/sbin/" + action + "-master.sh")
     # ctx.run("$SPARK_HOME/sbin/start-master.sh")
 
+
 @task
-def spark_workers_launch(ctx):
-    ctx.run("/home/xiaoyu/software/spark-2.4.5-bin-hadoop2.7/sbin/start-slave.sh spark://" + "192.168.122.53:7077")
+def spark_workers_action(ctx, action, master_ip)):
+    ctx.run("/home/xiaoyu/software/spark-2.4.5-bin-hadoop2.7/sbin/" + action + "-slave.sh spark://" + master_ip + ":7077")
+
+
 
 @task
 def install_perf(ctx):
@@ -92,37 +91,61 @@ def install_mysql(ctx):
     ctx.run("mysql --version")
 
 
-if __name__ == "__main__":   
+def get_config_path(filename):
+    return os.path.join(Path(__file__).resolve().parent.parent.parent, "config", filename)
 
+
+def read_config(filename):
+    config_file = get_config_path(filename)
+    print("Loading", config_file)
+    return benedict.from_yaml(config_file)
+
+
+def get_hosts(ctx, cfg):
     hosts = []
-    for i in range(5):
-        portnum = 10000 + i
-        hosts.append('localhost:' + str(portnum))
+    # Get mapping ports
+    private_key = get_config_path(os.path.join('private_key', cfg['key']))
 
-    pool = Group(*hosts,
-            user = "xiaoyu",
-            connect_kwargs={"password": "1"})  
+    for port in sroted(cfg['mapping'].keys()):
+        hosts.append('localhost:' + str(port))
+    print("user", cfg['username'], "key_filename", private_key)
+    return Group(*hosts, user = cfg['username'], connect_kwargs = {"key_filename":private_key}) 
 
-    for c in pool:
+
+@task
+def install(ctx, portforward='portforward.yaml'):
+    cfg = read_config(portforward)
+    hosts = get_hosts(ctx, cfg)
+ 
+    master_port = sorted(cfg['mapping'].keys())[0]
+    master_ip = cfg['mapping'][master_port]
+
+    for host in hosts:
         pool_test(c)
         install_jdk8(c)
-        install_spark(c)
+        install_spark(c, master_ip)
         install_scala(c)
         install_perf(c)
-        
-    spark_master_launch(pool[0])   
-    for c in pool[1:]: 
-        spark_workers_launch(c)
-    
-    # for c in pool[1:]: 
-    #     spark_workers_launch(c)
-    #     c.run("$SPARK_HOME/sbin/stop-slave.sh")
-    # pool[0].run("$SPARK_HOME/sbin/stop-master.sh")
-    
-    
 
-    
-    
+    spark_action(ctx, portforward, 'start')
 
-    
+@task
+def spark_action(ctx, portforward='portforward.yaml', action):
+    cfg = read_config(portforward)
+    hosts = get_hosts(ctx, cfg) 
+    master_port = sorted(cfg['mapping'].keys())[0]
+    master_ip = cfg['mapping'][master_port]
 
+    spark_master_action(hosts[0], 'start')   
+
+    for host in hosts[1:]: 
+        spark_workers_action(host, 'start', master_ip)
+
+
+@task
+def start_spark(ctx, portforward='portforward.yaml', action):
+    spark_action(ctx, portforward, 'start')
+
+@task
+def stop_spark(ctx, portforward='portforward.yaml', action):
+    spark_action(ctx, portforward, 'stop')

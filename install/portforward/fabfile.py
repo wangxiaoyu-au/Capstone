@@ -10,13 +10,15 @@ from benedict import benedict
 import psutil 
 
 
-def get_config(filename):
+def get_config_path(filename):
     return os.path.join(Path(__file__).resolve().parent.parent.parent, "config", filename)
 
+
 def read_config(filename):
-    config_file = get_config(filename)
+    config_file = get_config_path(filename)
     print("Loading", config_file)
     return benedict.from_yaml(config_file)
+
 
 def get_hosts(ctx, password, cfg):
     hosts = []
@@ -25,6 +27,7 @@ def get_hosts(ctx, password, cfg):
         hosts.append(ip + ':22')
     print("user", cfg['username'])
     return Group(*hosts, user = cfg['username'], connect_kwargs={"password": password} )  
+
 
 """
 fab --prompt-for-sudo-password init-sudo --port-forward=test.yaml --password= 
@@ -47,7 +50,7 @@ def set_nopass_sudo(ctx, cfg):
 
 
 def ssh_key_login(ctx, cfg):
-    public_key = get_config(os.path.join('private_key', cfg['key'])) + '.pub'
+    public_key = get_config_path(os.path.join('private_key', cfg['key'])) + '.pub'
     print("Using public key:", public_key)
     with open(public_key, "r") as f:
         print("Public key content:", public_key)
@@ -62,9 +65,10 @@ def ssh_key_login(ctx, cfg):
 def start(ctx, port_forward="portforward.yaml", use_password='n'):
     print("Using configurations", port_forward)
     cfg = read_config(port_forward)
-    private_key = get_config(os.path.join('private_key', cfg['key']))
+    private_key = get_config_path(os.path.join('private_key', cfg['key']))
     for port, ip in cfg['mapping'].items():
         map_to_local(ctx, ip, cfg['username'], private_key, port, use_password=use_password)
+
 
 @task
 def stop(ctx):
