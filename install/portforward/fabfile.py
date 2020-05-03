@@ -56,7 +56,7 @@ def ssh_key_login(ctx, cfg):
         ctx.run("echo '{0}' | tee -a ~/.ssh/authorized_keys".format(f.read()))
         ctx.run("chmod 400 ~/.ssh/authorized_keys")
         print("complete.")
-        
+
 
 @task
 def start(ctx, port_forward="portforward.yaml", use_password='n'):

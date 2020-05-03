@@ -36,6 +36,19 @@ Copy the output of this command and run it in every host that need to login (e.g
 
 echo "echo \"$(cat config/private_key/dev_key.pub)\" >> ~/.ssh/authorized_keys"
 
+### No Password sudo
+
+```
+echo "${USER} ALL=(ALL) NOPASSWD: ALL" | sudo tee -a /etc/sudoers
+```
+
+### System preparation (testing)
+
+```
+sudo apt install openjdk-8 openjdk-11 openjdk-11-dbg openjdk-8-dbg 
+sudo apt install libelf-dev libunwind-dev libaudit-dev libclang-dev
+```
+
 ### Install Spark
 
 ### Install HDFS
