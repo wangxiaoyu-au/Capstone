@@ -21,7 +21,7 @@ def start(ctx, port_forward="portforward.yaml"):
     ports = benedict.from_yaml(config_file)
     private_key = get_config(os.path.join('private_key', ports['key']))
     for port, ip in ports['mapping'].items():
-        map(ctx, ip, ports['username'], private_key, port )
+        map2local(ctx, ip, ports['username'], private_key, port )
 
 
 @task
@@ -42,8 +42,8 @@ def status(ctx):
 
 
 @task
-def map(ctx, ip, username, keyfile, local_port, remote_port=22):
-    cmd_template = 'ssh -oStrictHostKeyChecking=no -fNL {local_port}:localhost:{remote_port} {username}@{remote_ip} -i {keyfile}'
+def map2local(ctx, ip, username, keyfile, local_port, remote_port=22):
+    cmd_template = 'ssh -oStrictHostKeyChecking=no -fNL {local_port}:localhost:{remote_port} {username}@{remote_ip}'
     print('Mapping', ip, ' on', remote_port, ' to localhost on', local_port)
     cmd = cmd_template.format(local_port=local_port,
         username=username,

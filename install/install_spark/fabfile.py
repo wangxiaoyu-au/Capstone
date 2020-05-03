@@ -95,7 +95,7 @@ def install_mysql(ctx):
 if __name__ == "__main__":   
 
     hosts = []
-    for i in range(2):
+    for i in range(5):
         portnum = 10000 + i
         hosts.append('localhost:' + str(portnum))
 
