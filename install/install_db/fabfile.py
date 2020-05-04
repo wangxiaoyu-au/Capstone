@@ -53,8 +53,8 @@ def install_influxdb(ctx, cfg):
     ctx.run("sudo curl -sL https://repos.influxdata.com/influxdb.key | sudo apt-key add -")
     ctx.run("sudo apt update")
     ctx.run("sudo apt install -y influxdb")
-    ctx.run("sudo mkdir /usr/local/share/collectd")
-    ctx.run("sudo wget -P /usr/local/share/collectd https://raw.githubusercontent.com/collectd/collectd/master/src/types.db")
+    ctx.run("sudo mkdir /usr/share/collectd")
+    ctx.run("sudo wget -P /usr/share/collectd https://raw.githubusercontent.com/collectd/collectd/master/src/types.db")
     ctx.run("sudo service influxdb start")
     print("Installation complete")
 

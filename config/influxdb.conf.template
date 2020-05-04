@@ -2,14 +2,14 @@ reporting-disabled = false
 bind-address = "127.0.0.1:8088"
 
 [meta]
-dir = "/home/xiaoyu/.influxdb/meta"
+dir = "/var/lib/influxdb/meta"
 retention-autocreate = true
 logging-enabled = true
 
 [data]
-dir = "/home/xiaoyu/.influxdb/data"
+dir = "/var/lib/influxdb/data"
 index-version = "inmem"
-wal-dir = "/home/xiaoyu/.influxdb/wal"
+wal-dir = "/var/lib/influxdb/wal"
 wal-fsync-delay = "0s"
 validate-keys = false
 query-log-enabled = true
