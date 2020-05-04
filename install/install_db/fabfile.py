@@ -53,6 +53,8 @@ def install_influxdb(ctx, cfg):
     ctx.run("sudo curl -sL https://repos.influxdata.com/influxdb.key | sudo apt-key add -")
     ctx.run("sudo apt update")
     ctx.run("sudo apt install -y influxdb")
+    ctx.run("sudo mkdir /usr/local/share/collectd")
+    ctx.run("sudo wget -P /usr/local/share/collectd https://raw.githubusercontent.com/collectd/collectd/master/src/types.db")
     ctx.run("sudo service influxdb start")
     print("Installation complete")
 
@@ -60,27 +62,33 @@ def install_influxdb(ctx, cfg):
 def update_influxdb(ctx, cfg):
     ctx.run("sudo service influxdb stop")
 
-    tmp = tempfile.TemporaryFile(mode='w+t')
+    tmp = tempfile.NamedTemporaryFile(mode='w+t', suffix=".conf", delete=False)
     try:
         lines = open(get_local_path(cfg['influxdb']['config'])).readlines()
-        lines = [ line.replace("{influxdb.port}", cfg['influxdb']['port']) for line in lines ]
+        lines = [ line.replace("{influxdb.port}", str(cfg['influxdb']['port'])) for line in lines ]
         tmp.writelines(lines)
     finally:
-        f.close()
+        tmp.close()
     
     backup_file = "influxdb.conf.backup." + datetime.now().strftime("%m-%d-%Y-%H-%M-%S")
     local_backup = get_local_path(backup_file, 'backup')
     ctx.run("mkdir -p /home/" +  cfg['username'] + "/backup")
     remote_backup = "/home/" + cfg['username']  + "/backup/" + backup_file
+    print("Backup remote: cp /etc/influxdb/influxdb.conf " + remote_backup)
     ctx.run("sudo cp /etc/influxdb/influxdb.conf " + remote_backup)
-    ctx.run("sudo rm -rf /etc/influxdb/influxdb.conf")
     ctx.run("sudo chown " + cfg['username'] + ":"+ cfg['username'] + " " + remote_backup)
+    print("Download to local: " + local_backup)
     ctx.get(remote_backup, local_backup)   
-
-    new_file = "influxdb.conf.new." + datetime.now().strftime("%m-%d-%Y-%H-%M-%S")
-    ctx.put(tmp.name, remote='/tmp/' + new_file)
-    ctx.run("sudo cp /tmp/" + new_file + " /etc/influxdb/influxdb.conf")
+   
+    new_file = "/tmp/influxdb.conf.new." + datetime.now().strftime("%m-%d-%Y-%H-%M-%S")
+    print("Upload from local: " + str(tmp.name) + " to remote:" + new_file)
+    ctx.put(str(tmp.name), remote= new_file)
+    ctx.run("sudo rm -rf /etc/influxdb/influxdb.conf")
+    ctx.run("sudo mv " +  new_file + " /etc/influxdb/influxdb.conf")
+    print("Updated /etc/influxdb/influxdb.conf with " + new_file)
+    ctx.run("sudo chown root:root /etc/influxdb/influxdb.conf")
     ctx.run("sudo service influxdb start")
+    print("Restart InfluxDB complete")
 
 
 def install_grafana(ctx):
