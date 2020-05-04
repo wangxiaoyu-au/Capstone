@@ -27,9 +27,10 @@ def install(ctx, portforward='portforward.yaml', influxdb='y', grafana='y'):
     if influxdb == 'y':
         conn_influx  = Connection(cfg['influxdb']['ip'], user = cfg['username'], connect_kwargs = {"key_filename":private_key})
         install_influxdb(conn_influx, cfg)
-    
+        
+
     if grafana == 'y':
-        conn_grafana  = Connection(cfg['grafana'], user = cfg['username'], connect_kwargs = {"key_filename":private_key})
+        conn_grafana  = Connection(cfg['grafana']['ip'], user = cfg['username'], connect_kwargs = {"key_filename":private_key})
         install_grafana(conn_grafana)
 
 
@@ -40,13 +41,14 @@ def install_influxdb(ctx, cfg):
     ctx.run("sudo curl -sL https://repos.influxdata.com/influxdb.key | sudo apt-key add -")
     ctx.run("sudo apt update")
     ctx.run("sudo apt install -y influxdb")
+    print("Installation complete")
 
 def update_influxdb(ctx, cfg):
     ctx.run("sudo service influxdb stop")
     
     tmp = tempfile.TemporaryFile(mode='w+t')
     try:
-        lines = open(get_local_path(cfg['influxdb']['config']))).readlines()
+        lines = open(get_local_path(cfg['influxdb']['config'])).readlines()
         lines = [ line.replace("{influxdb.port}", cfg['influxdb']['port']) for line in lines ]
         tmp.writelines(lines)
     finally:
@@ -73,4 +75,4 @@ def install_grafana(ctx):
 
 @task
 def install_grafana(ctx, portforward='portforward.yaml'):
-
+    pass
