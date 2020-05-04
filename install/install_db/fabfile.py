@@ -86,7 +86,7 @@ def update_influxdb(ctx, cfg):
     ctx.run("sudo rm -rf /etc/influxdb/influxdb.conf")
     ctx.run("sudo mv " +  new_file + " /etc/influxdb/influxdb.conf")
     print("Updated /etc/influxdb/influxdb.conf with " + new_file)
-    ctx.run("sudo chown root:root /etc/influxdb/influxdb.conf")
+    ctx.run("sudo chown influxdb:influxdb /etc/influxdb/influxdb.conf")
     ctx.run("sudo service influxdb start")
     print("Restart InfluxDB complete")
 
