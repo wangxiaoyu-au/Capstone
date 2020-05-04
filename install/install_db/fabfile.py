@@ -27,11 +27,23 @@ def install(ctx, portforward='portforward.yaml', influxdb='y', grafana='y'):
     if influxdb == 'y':
         conn_influx  = Connection(cfg['influxdb']['ip'], user = cfg['username'], connect_kwargs = {"key_filename":private_key})
         install_influxdb(conn_influx, cfg)
-        
 
     if grafana == 'y':
         conn_grafana  = Connection(cfg['grafana']['ip'], user = cfg['username'], connect_kwargs = {"key_filename":private_key})
         install_grafana(conn_grafana)
+
+
+@task
+def update(ctx, portforward='portforward.yaml', influxdb='y', grafana='y'):
+    cfg = read_config(portforward)
+    private_key = get_local_path(os.path.join('private_key', cfg['key']))
+    if influxdb == 'y':
+        conn_influx  = Connection(cfg['influxdb']['ip'], user = cfg['username'], connect_kwargs = {"key_filename":private_key})
+        update_influxdb(conn_influx, cfg)
+
+    if grafana == 'y':
+        conn_grafana  = Connection(cfg['grafana']['ip'], user = cfg['username'], connect_kwargs = {"key_filename":private_key})
+        update_grafana(conn_grafana)
 
 
 def install_influxdb(ctx, cfg):
@@ -41,11 +53,13 @@ def install_influxdb(ctx, cfg):
     ctx.run("sudo curl -sL https://repos.influxdata.com/influxdb.key | sudo apt-key add -")
     ctx.run("sudo apt update")
     ctx.run("sudo apt install -y influxdb")
+    ctx.run("sudo service influxdb start")
     print("Installation complete")
+
 
 def update_influxdb(ctx, cfg):
     ctx.run("sudo service influxdb stop")
-    
+
     tmp = tempfile.TemporaryFile(mode='w+t')
     try:
         lines = open(get_local_path(cfg['influxdb']['config'])).readlines()
@@ -68,11 +82,10 @@ def update_influxdb(ctx, cfg):
     ctx.run("sudo cp /tmp/" + new_file + " /etc/influxdb/influxdb.conf")
     ctx.run("sudo service influxdb start")
 
+
 def install_grafana(ctx):
     pass
 
 
-
-@task
-def install_grafana(ctx, portforward='portforward.yaml'):
+def update_grafana(ctx):
     pass
