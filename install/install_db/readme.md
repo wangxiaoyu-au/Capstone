@@ -1,4 +1,4 @@
-# Install InfluxoDB & Grafana
+# Install InfluxDB & Grafana
 
 ```bash
 fab install
@@ -27,4 +27,16 @@ Then execute
 
 ```bash
 fab update
+```
+
+If only install InfluxDB
+
+```bash
+fab install --grafana=n
+```
+
+If only install Grafana
+
+```bash
+fab install --influxdb=n
 ```

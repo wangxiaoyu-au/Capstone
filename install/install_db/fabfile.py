@@ -92,7 +92,15 @@ def update_influxdb(ctx, cfg):
 
 
 def install_grafana(ctx):
-    pass
+    print("Install Grafana ")
+    ctx.run("hostname")
+    ctx.run("udo apt install -y apt-transport-https")
+    ctx.run("sudo apt install -y software-properties-common wget")
+    ctx.run("wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -")
+    ctx.run("sudo add-apt-repository \"deb https://packages.grafana.com/oss/deb stable main\"")
+    ctx.run("sudo apt update")
+    ctx.run("sudo apt install grafana")
+    ctx.run("sudo service grafana-server start")
 
 
 def update_grafana(ctx):
