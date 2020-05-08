@@ -40,3 +40,11 @@ If only install Grafana
 ```bash
 fab install --influxdb=n
 ```
+
+# Management
+
+```bash
+fab status
+fab start
+fab stop
+```

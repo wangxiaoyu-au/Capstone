@@ -94,14 +94,52 @@ def update_influxdb(ctx, cfg):
 def install_grafana(ctx):
     print("Install Grafana ")
     ctx.run("hostname")
-    ctx.run("udo apt install -y apt-transport-https")
+    ctx.run("sudo apt install -y apt-transport-https")
     ctx.run("sudo apt install -y software-properties-common wget")
     ctx.run("wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -")
     ctx.run("sudo add-apt-repository \"deb https://packages.grafana.com/oss/deb stable main\"")
     ctx.run("sudo apt update")
-    ctx.run("sudo apt install grafana")
+    ctx.run("sudo apt install grafana -y")
     ctx.run("sudo service grafana-server start")
 
 
 def update_grafana(ctx):
     pass
+
+
+@task
+def status(ctx, portforward='portforward.yaml')
+    cfg = read_config(portforward)
+    private_key = get_local_path(os.path.join('private_key', cfg['key']))
+    conn_influx  = Connection(cfg['influxdb']['ip'], user = cfg['username'], connect_kwargs = {"key_filename":private_key})
+    conn_influx.run("hostname")
+    c.run("ps aux | grep influxdb")
+
+    conn_grafana  = Connection(cfg['grafana']['ip'], user = cfg['username'], connect_kwargs = {"key_filename":private_key})
+    conn_grafana.run("hostname")
+    c.run("ps aux | grep grafana")
+
+@task
+def stop(ctx, portforward='portforward.yaml')
+    cfg = read_config(portforward)
+    private_key = get_local_path(os.path.join('private_key', cfg['key']))
+    conn_influx  = Connection(cfg['influxdb']['ip'], user = cfg['username'], connect_kwargs = {"key_filename":private_key})
+    run_command(conn_influx, "sudo service influxdb start")
+
+    conn_grafana  = Connection(cfg['grafana']['ip'], user = cfg['username'], connect_kwargs = {"key_filename":private_key})
+    run_command(conn_grafana, "sudo service influxdb start")
+
+
+@task
+def stop(ctx, portforward='portforward.yaml')
+    cfg = read_config(portforward)
+    private_key = get_local_path(os.path.join('private_key', cfg['key']))
+    conn_influx  = Connection(cfg['influxdb']['ip'], user = cfg['username'], connect_kwargs = {"key_filename":private_key})
+    run_command(conn_influx, "sudo service influxdb stop")
+
+    conn_grafana  = Connection(cfg['grafana']['ip'], user = cfg['username'], connect_kwargs = {"key_filename":private_key})
+    run_command(conn_grafana, "sudo service influxdb stop")
+
+def run_command(ctx, cmd):
+    ctx.run("hostname")
+    ctx.run(cmd)
