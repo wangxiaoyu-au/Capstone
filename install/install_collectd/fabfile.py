@@ -7,7 +7,9 @@ import json
 import yaml
 import subprocess
 from benedict import benedict
-import psutil 
+import psutil
+import tempfile
+from datetime import datetime
 
 
 def install_collectd(ctx):
@@ -15,12 +17,12 @@ def install_collectd(ctx):
     ctx.sudo("apt install collectd -y")
 
 
-def get_config_path(filename):
+def get_local_path(filename):
     return os.path.join(Path(__file__).resolve().parent.parent.parent, "config", filename)
 
 
 def read_config(filename):
-    config_file = get_config_path(filename)
+    config_file = get_local_path(filename)
     print("Loading", config_file)
     return benedict.from_yaml(config_file)
 
@@ -28,7 +30,7 @@ def read_config(filename):
 def get_all_hosts(ctx, cfg):
     hosts = []
     # Get mapping ports
-    private_key = get_config_path(os.path.join('private_key', cfg['key']))    
+    private_key = get_local_path(os.path.join('private_key', cfg['key']))    
     for port in sroted(cfg['mapping'].keys()):
         hosts.append('localhost:' + str(port))
     print("user", cfg['username'], "key_filename", private_key)
@@ -44,16 +46,17 @@ def install(ctx, portforward='portforward.yaml'):
     master_ip = cfg['mapping'][master_port]
 
     for host in hosts:
-        install_collectd(c)
+        install_collectd(host)
 
     start(ctx, portforward)
 
 @task
-def collectd_cmd(ctx, portforward='portforward.yaml', cmd):
+def collectd_cmd(ctx, portforward='portforward.yaml', cmd="echo hello"):
     cfg = read_config(portforward)
     hosts = get_all_hosts(ctx, cfg) 
     for host in hosts: 
         host.run("hostname")
+        host.run("echo \"" + cmd + "\"")
         host.run(cmd)
 
 
@@ -72,9 +75,12 @@ def stop(ctx, portforward='portforward.yaml'):
     collectd_cmd(ctx, portforward, 'sudo service collectd top')
 
 
+@task
 def update(ctx, portforward='portforward.yaml'):
     cfg = read_config(portforward)
     hosts = get_all_hosts(ctx, cfg)
+    for host in hosts:
+        update_collectd(host, cfg)
 
 
 def update_collectd(ctx, cfg):
