@@ -108,19 +108,17 @@ def update_grafana(ctx):
 
 
 @task
-def status(ctx, portforward='portforward.yaml')
+def status(ctx, portforward='portforward.yaml'):
     cfg = read_config(portforward)
     private_key = get_local_path(os.path.join('private_key', cfg['key']))
     conn_influx  = Connection(cfg['influxdb']['ip'], user = cfg['username'], connect_kwargs = {"key_filename":private_key})
-    conn_influx.run("hostname")
-    c.run("ps aux | grep influxdb")
+    run_command(conn_influx, "ps aux | grep influxdb")
 
     conn_grafana  = Connection(cfg['grafana']['ip'], user = cfg['username'], connect_kwargs = {"key_filename":private_key})
-    conn_grafana.run("hostname")
-    c.run("ps aux | grep grafana")
+    run_command(conn_grafana, "ps aux | grep grafana")
 
 @task
-def stop(ctx, portforward='portforward.yaml')
+def stop(ctx, portforward='portforward.yaml'):
     cfg = read_config(portforward)
     private_key = get_local_path(os.path.join('private_key', cfg['key']))
     conn_influx  = Connection(cfg['influxdb']['ip'], user = cfg['username'], connect_kwargs = {"key_filename":private_key})
@@ -131,7 +129,7 @@ def stop(ctx, portforward='portforward.yaml')
 
 
 @task
-def stop(ctx, portforward='portforward.yaml')
+def stop(ctx, portforward='portforward.yaml'):
     cfg = read_config(portforward)
     private_key = get_local_path(os.path.join('private_key', cfg['key']))
     conn_influx  = Connection(cfg['influxdb']['ip'], user = cfg['username'], connect_kwargs = {"key_filename":private_key})

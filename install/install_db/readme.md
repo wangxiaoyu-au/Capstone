@@ -1,4 +1,7 @@
+
 # Install InfluxDB & Grafana
+
+## Installation
 
 ```bash
 fab install
@@ -11,7 +14,8 @@ See http://www.inanzzz.com/index.php/post/ms6c/collectd-influxdb-and-grafana-int
 There are steps can't automated at this moment due to influxdb 1.8 is the stable version
 https://docs.influxdata.com/influxdb/v1.8/tools/influx-cli/
 
-InfluxDB 2.0 support commandline query https://v2.docs.influxdata.com/v2.0/reference/cli/influx/query/
+InfluxDB 2.0 support commandline query https://v2.docs.influxdata.com/v2.0/reference/cli/influx/query
+
 ```bash
 ssh xiaoyu@localhost -p 11000
 # Please copy one line execute it then another line.
@@ -23,7 +27,7 @@ exit
 exit
 ```
 
-Then execute 
+Then execute
 
 ```bash
 fab update
@@ -41,7 +45,7 @@ If only install Grafana
 fab install --influxdb=n
 ```
 
-# Management
+## Management
 
 ```bash
 fab status
