@@ -10,6 +10,7 @@ influxdb:
   config: "influxdb.conf.template" # InfluxDB configuration template, influxdb.port will be replaced into this template
 collectd: 
   config: "collectd.conf.template" # Collectd configuration template, influxdb ip & port will be replaced into this template
+spark-port-range: 10000-10999
 mapping:
   10000: "192.168.122.190" # spark master
   10001: "192.168.122.179" # node 1

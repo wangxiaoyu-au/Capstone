@@ -52,3 +52,14 @@ fab status
 fab start
 fab stop
 ```
+
+For `fab status`, when seeing something like
+
+```
+...
+influxdb  9987  0.1  2.9 1007168 119296 ?      Ssl  May04   8:45 /usr/bin/influxd -config /etc/influxdb/influxdb.conf
+...
+grafana  23652  0.1  1.1 898868 46508 ?        Ssl  00:10   0:01 /usr/sbin/grafana-server --config=/etc/grafana/grafana.ini --pidfile=/var/run/grafana/grafana-server.pid --packaging=deb cfg:default.paths.logs=/var/log/grafana cfg:default.paths.data=/var/lib/grafana cfg:default.paths.plugins=/var/lib/grafana/plugins cfg:default.paths.provisioning=/etc/grafana/provisioning
+```
+
+Means the InfluxDB and Grafana are running correctly.

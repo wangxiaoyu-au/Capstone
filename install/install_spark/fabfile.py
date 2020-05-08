@@ -79,7 +79,6 @@ def spark_workers_action(ctx, action, master_ip)):
     ctx.run("/home/xiaoyu/software/spark-2.4.5-bin-hadoop2.7/sbin/" + action + "-slave.sh spark://" + master_ip + ":7077")
 
 
-
 @task
 def install_perf(ctx):
     ctx.sudo("apt install linux-tools-$(uname -r) linux-tools-generic -y")
@@ -101,13 +100,17 @@ def read_config(filename):
     return benedict.from_yaml(config_file)
 
 
-def get_hosts(ctx, cfg):
+def get_spark_hosts(ctx, cfg):
     hosts = []
     # Get mapping ports
     private_key = get_config_path(os.path.join('private_key', cfg['key']))
-
+    spark_range = cfg['spark-port-range']
+    port_start = int(spark_range.split('-')[0])
+    port_end = int(spark_range.split('-')[1])
+    
     for port in sroted(cfg['mapping'].keys()):
-        hosts.append('localhost:' + str(port))
+        if port >= port_start and port <= port_end:
+            hosts.append('localhost:' + str(port))
     print("user", cfg['username'], "key_filename", private_key)
     return Group(*hosts, user = cfg['username'], connect_kwargs = {"key_filename":private_key}) 
 
@@ -115,7 +118,7 @@ def get_hosts(ctx, cfg):
 @task
 def install(ctx, portforward='portforward.yaml'):
     cfg = read_config(portforward)
-    hosts = get_hosts(ctx, cfg)
+    hosts = get_spark_hosts(ctx, cfg)
  
     master_port = sorted(cfg['mapping'].keys())[0]
     master_ip = cfg['mapping'][master_port]
@@ -132,7 +135,7 @@ def install(ctx, portforward='portforward.yaml'):
 @task
 def spark_action(ctx, portforward='portforward.yaml', action):
     cfg = read_config(portforward)
-    hosts = get_hosts(ctx, cfg) 
+    hosts = get_spark_hosts(ctx, cfg) 
     master_port = sorted(cfg['mapping'].keys())[0]
     master_ip = cfg['mapping'][master_port]
 
