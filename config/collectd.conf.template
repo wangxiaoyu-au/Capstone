@@ -236,8 +236,8 @@ LoadPlugin swap
 #</Plugin>
 
 <Plugin cpu>
-	ReportByCpu false
-	ReportByState false
+	ReportByCpu true
+	ReportByState true
 	ValuesPercentage true
 </Plugin>
 
