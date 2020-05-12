@@ -17,9 +17,8 @@ def install_collectd(ctx):
     ctx.sudo("apt install collectd -y")
 
 
-def get_local_path(filename):
-    return os.path.join(Path(__file__).resolve().parent.parent.parent, "config", filename)
-
+def get_local_path(filename, dir='config'):
+    return os.path.join(Path(__file__).resolve().parent.parent.parent, dir, filename)
 
 def read_config(filename):
     config_file = get_local_path(filename)
@@ -31,7 +30,7 @@ def get_all_hosts(ctx, cfg):
     hosts = []
     # Get mapping ports
     private_key = get_local_path(os.path.join('private_key', cfg['key']))    
-    for port in sroted(cfg['mapping'].keys()):
+    for port in sorted(cfg['mapping'].keys()):
         hosts.append('localhost:' + str(port))
     print("user", cfg['username'], "key_filename", private_key)
     return Group(*hosts, user = cfg['username'], connect_kwargs = {"key_filename":private_key}) 

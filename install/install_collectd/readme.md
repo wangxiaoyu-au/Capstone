@@ -27,3 +27,8 @@ To collec data into InfluxDB, the following part will be replace automatically t
   Server "{influxdb.ip}" "{influxdb.port}"
 </Plugin>
 ```
+
+## References
+
+* http://www.inanzzz.com/index.php/post/ms6c/collectd-influxdb-and-grafana-integration
+* https://blog.lbdg.me/change-influxdb-password-user/
