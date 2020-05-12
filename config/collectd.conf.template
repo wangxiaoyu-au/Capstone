@@ -106,7 +106,7 @@ LoadPlugin cpu
 #LoadPlugin curl_json
 #LoadPlugin curl_xml
 #LoadPlugin dbi
-#LoadPlugin df
+LoadPlugin df
 LoadPlugin disk
 #LoadPlugin dns
 #LoadPlugin dpdkstat
@@ -242,7 +242,7 @@ LoadPlugin swap
 </Plugin>
 
 
-#<Plugin df>
+<Plugin df>
 #	Device "/dev/sda1"
 #	Device "192.168.0.2:/mnt/nfs"
 #	MountPoint "/home"
@@ -262,11 +262,11 @@ LoadPlugin swap
 #	IgnoreSelected true
 
 #	ReportByDevice false
-#	ReportInodes false
+	ReportInodes true
 
-#	ValuesAbsolute true
-#	ValuesPercentage false
-#</Plugin>
+	ValuesAbsolute true
+	ValuesPercentage true
+</Plugin>
 
 #<Plugin disk>
 #	Disk "hda"
@@ -353,6 +353,7 @@ LoadPlugin swap
 <Plugin swap>
 	ReportByDevice false
 	ReportBytes true
+	ValuesPercentage true
 </Plugin>
 
 
