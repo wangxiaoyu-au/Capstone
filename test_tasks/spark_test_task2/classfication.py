@@ -19,12 +19,11 @@ from pyspark.ml.feature import VectorAssembler
 import numpy as np
 import pyspark.sql.functions as F
 from pyspark.sql.types import *
-import re
 from pyspark.ml.feature import Word2Vec, HashingTF, IDF, Tokenizer, CountVectorizer, StopWordsRemover
 from pyspark.ml.clustering import KMeans, LDA, BisectingKMeans
 from pyspark.ml import Pipeline
 from pyspark import SparkContext
-from ml_utils import *
+from func_utils import *
 import argparse
 
 
@@ -34,8 +33,6 @@ parser.add_argument("--input", help="the input path",
                     default='~/comp5349/lab_commons/week5/')
 
 args = parser.parse_args()
-
-sc.install_pypi_package("scikit_learn")
 
 
 spark = SparkSession \
@@ -52,17 +49,10 @@ train_sents1 = train_df.select('genre', 'sentence1')
 train_sents2 = train_df.select('genre', 'sentence2')
 # train_sents1.show(5)
 
-
-def lower_folding(x):    
-    return x.lower()
-
 udf_lower = F.udf(lower_folding, StringType() )
 train_sents1_lower = train_sents1.withColumn('lower_sents', udf_lower('sentence1') )
 # train_sents1_lower.show(5)
 
-def remove_punctuation_re(x):
-    x = re.sub(r'[^\w\s]','',x)    
-    return x
 
 udf_rv_punc = F.udf(remove_punctuation_re, StringType() )
 train_sents1_rv_punc = train_sents1_lower.withColumn('rv_punc_sents', udf_rv_punc('lower_sents') )

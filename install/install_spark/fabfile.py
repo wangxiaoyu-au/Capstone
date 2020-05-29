@@ -152,3 +152,12 @@ def start_spark(ctx, portforward='portforward.yaml', action):
 @task
 def stop_spark(ctx, portforward='portforward.yaml', action):
     spark_action(ctx, portforward, 'stop')
+
+@task
+def pip(ctx, package, portforward='portforward.yaml'):
+    cfg = read_config(portforward)
+    hosts = get_spark_hosts(ctx, cfg)
+ 
+    for host in hosts:
+        host.run("sudo apt install python3-pip -y")
+        host.run("pip3 install {0} --user".format(package))

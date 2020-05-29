@@ -12,3 +12,9 @@ fab install # Install sparks
 fab start-spark # start spark cluster
 fab stop-spark  # stop spark cluster
 ```
+
+Install additional Python libraries
+
+```bash
+fab pip scikit_learn
+```
