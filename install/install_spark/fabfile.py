@@ -35,7 +35,7 @@ def connect(ctx):
     # C.run("source ~/.bashrc")
     #C.run("mkdir /home/wangxiaoyu.au/MySparkConf")
     #C.put('C:/Projects/test_1/spark.master.conf', '/home/wangxiaoyu.au/MySparkConf/spark.master.conf')
-
+    pass
 
 @task
 def install_jdk8(ctx):
@@ -75,7 +75,7 @@ def spark_master_action(ctx, action):
 
 
 @task
-def spark_workers_action(ctx, action, master_ip)):
+def spark_workers_action(ctx, action, master_ip):
     ctx.run("/home/xiaoyu/software/spark-2.4.5-bin-hadoop2.7/sbin/" + action + "-slave.sh spark://" + master_ip + ":7077")
 
 
@@ -108,7 +108,7 @@ def get_spark_hosts(ctx, cfg):
     port_start = int(spark_range.split('-')[0])
     port_end = int(spark_range.split('-')[1])
     
-    for port in sroted(cfg['mapping'].keys()):
+    for port in sorted(cfg['mapping'].keys()):
         if port >= port_start and port <= port_end:
             hosts.append('localhost:' + str(port))
     print("user", cfg['username'], "key_filename", private_key)
@@ -133,7 +133,7 @@ def install(ctx, portforward='portforward.yaml'):
     spark_action(ctx, portforward, 'start')
 
 @task
-def spark_action(ctx, portforward='portforward.yaml', action):
+def spark_action(ctx, portforward='portforward.yaml', action='start'):
     cfg = read_config(portforward)
     hosts = get_spark_hosts(ctx, cfg) 
     master_port = sorted(cfg['mapping'].keys())[0]
@@ -146,11 +146,11 @@ def spark_action(ctx, portforward='portforward.yaml', action):
 
 
 @task
-def start_spark(ctx, portforward='portforward.yaml', action):
+def start_spark(ctx, portforward='portforward.yaml'):
     spark_action(ctx, portforward, 'start')
 
 @task
-def stop_spark(ctx, portforward='portforward.yaml', action):
+def stop_spark(ctx, portforward='portforward.yaml'):
     spark_action(ctx, portforward, 'stop')
 
 @task
