@@ -116,12 +116,13 @@ def get_spark_hosts(ctx, cfg):
 
 
 @task
-def install(ctx, portforward='portforward.yaml'):
+def install(ctx, portforward='portforward.yaml', master_ip=None):
     cfg = read_config(portforward)
     hosts = get_spark_hosts(ctx, cfg)
  
     master_port = sorted(cfg['mapping'].keys())[0]
-    master_ip = cfg['mapping'][master_port]
+    if master_ip is None:
+        master_ip = cfg['mapping'][master_port]
 
     for host in hosts:
         pool_test(c)
