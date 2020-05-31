@@ -21,7 +21,7 @@ import pyspark.sql.functions as F
 from pyspark.sql.types import *
 from pyspark.ml.feature import HashingTF, IDF, Tokenizer, CountVectorizer, StopWordsRemover
 from pyspark.ml.clustering import KMeans, LDA, BisectingKMeans
-
+from func_utils import *
 
 spark = SparkSession \
     .builder \

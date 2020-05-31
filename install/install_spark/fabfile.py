@@ -70,12 +70,14 @@ def pool_test(ctx):
 
 @task
 def spark_master_action(ctx, action):
+    ctx.run("hostname")
     ctx.run("/home/xiaoyu/software/spark-2.4.5-bin-hadoop2.7/sbin/" + action + "-master.sh")
     # ctx.run("$SPARK_HOME/sbin/start-master.sh")
 
 
 @task
 def spark_workers_action(ctx, action, master_ip):
+    ctx.run("hostname")
     ctx.run("/home/xiaoyu/software/spark-2.4.5-bin-hadoop2.7/sbin/" + action + "-slave.sh spark://" + master_ip + ":7077")
 
 
@@ -116,7 +118,7 @@ def get_spark_hosts(ctx, cfg):
 
 
 @task
-def install(ctx, portforward='portforward.yaml', master_ip=None):
+def install(ctx, portforward='portforward.yaml', master_ip=None, start='yes'):
     cfg = read_config(portforward)
     hosts = get_spark_hosts(ctx, cfg)
  
@@ -125,13 +127,14 @@ def install(ctx, portforward='portforward.yaml', master_ip=None):
         master_ip = cfg['mapping'][master_port]
 
     for host in hosts:
-        pool_test(c)
-        install_jdk8(c)
-        install_spark(c, master_ip)
-        install_scala(c)
-        install_perf(c)
-
-    spark_action(ctx, portforward, 'start')
+        pool_test(host)
+        install_jdk8(host)
+        install_spark(host, master_ip)
+        install_scala(host)
+        install_perf(host)
+    
+    if start == 'yes':
+        spark_action(ctx, portforward, 'start')
 
 @task
 def spark_action(ctx, portforward='portforward.yaml', action='start'):
@@ -140,10 +143,10 @@ def spark_action(ctx, portforward='portforward.yaml', action='start'):
     master_port = sorted(cfg['mapping'].keys())[0]
     master_ip = cfg['mapping'][master_port]
 
-    spark_master_action(hosts[0], 'start')   
+    spark_master_action(hosts[0], action)   
 
     for host in hosts[1:]: 
-        spark_workers_action(host, 'start', master_ip)
+        spark_workers_action(host, action, master_ip)
 
 
 @task
