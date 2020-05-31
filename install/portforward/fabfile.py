@@ -99,6 +99,8 @@ def map_to_local(ctx, ip, username, keyfile, local_port, remote_port=22, use_pas
         remote_ip=ip,
         keyfile=keyfile,
     )
+    
     # Remove existing mapping
+    subprocess.run('ssh-keygen -R "{remote_ip}"'.format(remote_ip=ip).split(' '))
     subprocess.run('ssh-keygen -R [localhost]:{local_port}'.format(local_port=local_port).split(' '))
     subprocess.run(cmd.split(' '))

@@ -6,5 +6,5 @@ spark-submit \
     --num-executors 4 \
     --executor-memory 2g \
     --driver-memory 2g \
-    --py-files func_utils.py classfication_random.py \
+    --py-files func_utils.py classfication_gbt.py \
     --input hdfs://192.168.122.247:9000/spark_test/data/train.tsv
