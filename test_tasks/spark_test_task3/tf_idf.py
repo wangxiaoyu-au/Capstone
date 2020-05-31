@@ -82,6 +82,6 @@ idf_actual_int_list = [int(i) for i in idf_actual_list]
 
 
 from sklearn.metrics import confusion_matrix 
-idf_conf = confusion_matrix(idf_actual_int_list, idf_pred_list, normalize = 'true') 
+idf_conf = confusion_matrix(idf_actual_int_list, idf_pred_list) 
 idf_conf
 
