@@ -24,14 +24,10 @@ from pyspark.ml.clustering import KMeans, LDA, BisectingKMeans
 from pyspark.ml import Pipeline
 from pyspark import SparkContext
 from func_utils import *
-import argparse
-
-
-sc = SparkContext(appName="Average Rating per Genre")
 
 spark = SparkSession \
     .builder \
-    .appName("comp5349 sentences clustering") \
+    .appName("task 2: RandomForestClassifier") \
     .getOrCreate()
 
 train_datafile = get_args().input

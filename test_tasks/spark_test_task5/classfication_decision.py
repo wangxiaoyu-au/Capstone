@@ -26,12 +26,9 @@ from pyspark import SparkContext
 from func_utils import *
 import argparse
 
-
-sc = SparkContext(appName="Average Rating per Genre")
-
 spark = SparkSession \
     .builder \
-    .appName("comp5349 sentences clustering") \
+    .appName("task 5: DecisionTreeClassifier") \
     .getOrCreate()
 
 train_datafile = get_args().input
@@ -59,7 +56,7 @@ doc2vecs_df = doc2vec_model.transform(train_sents1_rv_punc)
 w2v_train_df, w2v_test_df = doc2vecs_df.randomSplit([0.8, 0.2])
 
 from pyspark.ml.feature import StringIndexer
-from pyspark.ml.classification import GBTClassifier
+from pyspark.ml.classification import DecisionTreeClassifier
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 
 genre2label = StringIndexer(inputCol="genre", outputCol="label")

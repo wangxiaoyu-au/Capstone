@@ -25,7 +25,7 @@ from func_utils import *
 
 spark = SparkSession \
     .builder \
-    .appName("comp5349 sentences clustering") \
+    .appName("task 3: tf idf") \
     .getOrCreate()
 
 train_datafile = get_args().input

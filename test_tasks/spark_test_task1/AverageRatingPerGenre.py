@@ -12,7 +12,7 @@ import argparse
 
 
 if __name__ == "__main__":
-    sc = SparkContext(appName="Average Rating per Genre")
+    sc = SparkContext(appName="task 1:Average Rating per Genre")
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", help="the input path",
                         default='~/comp5349/lab_commons/week5/')
