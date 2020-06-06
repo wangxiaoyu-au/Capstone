@@ -6,7 +6,8 @@ import os
 from benedict import benedict
 from control_lib.collectd import Collectd
 from control_lib.portforward import Portforward
-
+from control_lib.grafana import Grafana
+from control_lib.influxdb import Influxdb
 
 def get_local_path(filename, dir='config'):
     return os.path.join(Path(__file__).resolve().parent.parent, dir, filename)
@@ -23,6 +24,8 @@ def init_modules(config_file):
     modules = {
         'collectd': Collectd(config),
         'portforward': Portforward(config),
+        'grafana': Grafana(config),
+        'influxdb': Influxdb(config),
     }
     return modules
 
