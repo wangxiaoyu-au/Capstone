@@ -1,6 +1,7 @@
 from control_lib.control_base import ControlBase
 import subprocess
 import psutil 
+import os
 
 class Portforward(ControlBase):
 
@@ -9,10 +10,10 @@ class Portforward(ControlBase):
             raise Error("You have to use password to complete portforward module installation.") 
         hosts = []
         # Get mapping ports
-        for port, ip in self.config['mapping'].items():
+        for port, ip in self._config['mapping'].items():
             hosts.append(ip + ':22')
-        print("user", self.config['username'])
-        return Group(*hosts, user = self.config['username'], connect_kwargs={"password": password} )  
+        print("user", self._config['username'])
+        return Group(*hosts, user = self._config['username'], connect_kwargs={"password": password} )  
 
 
     def _install(self, host):
@@ -21,14 +22,14 @@ class Portforward(ControlBase):
 
     
     def __install_nopass_sudo(self, host):
-        cmd = "echo '{0} ALL=(ALL) NOPASSWD: ALL' | sudo tee -a /etc/sudoers".format(self.config['username'])
+        cmd = "echo '{0} ALL=(ALL) NOPASSWD: ALL' | sudo tee -a /etc/sudoers".format(self._config['username'])
         print(cmd)
         host.run(cmd)
         host.sudo("tail -1 /etc/sudoers")
 
 
     def __install_ssh_key_login(self, host):
-        public_key = get_config_path(os.path.join('private_key', self.config['key'])) + '.pub'
+        public_key = self.get_local_path(os.path.join('private_key', self._config['key'])) + '.pub'
         print("Using public key:", public_key)
         with open(public_key, "r") as f:
             print("Public key content:", public_key)
@@ -40,9 +41,9 @@ class Portforward(ControlBase):
 
 
     def start(self):
-        private_key = get_config_path(os.path.join('private_key', self.config['key']))
-        for port, ip in self.config['mapping'].items():
-            self._map_to_local(ip, self.config['username'], private_key, port)
+        private_key = self.get_local_path(os.path.join('private_key', self._config['key']))
+        for port, ip in self._config['mapping'].items():
+            self._map_to_local(ip, self._config['username'], private_key, port)
 
 
     def _map_to_local(self, ip, username, keyfile, local_port, remote_port=22, use_password='n'):
