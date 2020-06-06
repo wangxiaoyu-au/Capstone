@@ -2,11 +2,12 @@ import tempfile
 from datetime import datetime
 from control_lib.control_base import ControlBase
 import os
-from fabric import Connection
+from fabric import Group
 
 class Pip(ControlBase):
 
-    def __init__(self):
+    def __init__(self, config):
+        super().__init__(config)
         self._pip_packages = ['scikit-learn']
 
     def _get_hosts(self, password=''):

@@ -2,7 +2,7 @@ import tempfile
 from datetime import datetime
 from control_lib.control_base import ControlBase
 import os
-from fabric import Connection
+from fabric import Group
 
 class Spark(ControlBase):
 
@@ -67,32 +67,32 @@ class Spark(ControlBase):
 
 
     def _spark_action(self, action='start'):
-        hosts = self._get_hosts(password)
+        hosts = self._get_hosts()
         master_port = sorted(self._config['mapping'].keys())[0]
         master_ip = self._config['mapping'][master_port]
 
-        self.spark_master_action(hosts[0], action)   
+        self._spark_master_action(hosts[0], action)   
 
         for host in hosts[1:]: 
-            self.spark_workers_action(host, action, master_ip)
+            self._spark_workers_action(host, action, master_ip)
 
 
-    def spark_master_action(self, host, action):
+    def _spark_master_action(self, host, action):
         host.run("hostname")
         host.run("/home/"+self._config['username']+"/software/spark-2.4.5-bin-hadoop2.7/sbin/" + action + "-master.sh")
 
 
-    def spark_workers_action(self, host, action, master_ip):
+    def _spark_workers_action(self, host, action, master_ip):
         host.run("hostname")
         host.run("/home/"+self._config['username']+"/software/spark-2.4.5-bin-hadoop2.7/sbin/" + action + "-slave.sh spark://" + master_ip + ":7077")
 
 
     def start(self):
-        self.spark_action('start')
+        self._spark_action('start')
 
 
-    def stop(self, host):
-        self.spark_action('stop')
+    def stop(self):
+        self._spark_action('stop')
 
 
     def _status(self, host):
