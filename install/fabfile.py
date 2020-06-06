@@ -21,7 +21,7 @@ def read_config(filename):
 def init_modules(config_file):
     config = read_config(config_file)    
     modules = {
-        'colletd': Collectd(config),
+        'collectd': Collectd(config),
     }
     return modules
 

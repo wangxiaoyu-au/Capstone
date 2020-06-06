@@ -1,6 +1,7 @@
 import tempfile
 from datetime import datetime
 from control_lib.control_base import ControlBase
+from pathlib import Path
 
 class Collectd(ControlBase):
 
