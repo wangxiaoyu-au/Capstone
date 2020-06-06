@@ -34,42 +34,50 @@ def init_modules(config_file):
     }
     return modules
 
-@task
-def install(ctx, module, config_file='config.yaml', password=''):
-    modules = init_modules(config_file)
-    if module in modules:
-        modules[module].install(password)
-    else:
-        print("Didn't find module {module}".format(module = module))
+def select_modules(module_names, config_file):
+    """Select modules with input module names, if no input names, return all modules"""
+    all_modules = init_modules(config_file)
+    filtered = []
+    if module_names == "":
+        return all_modules.values()
+    for module in module_names.split(','):
+        if module in modules:
+            filtered.append(module)
+        else:
+            print("Didn't find module {module}".format(module = module))
+    return filtered
+
 
 @task
-def start(ctx, module, config_file='config.yaml'):
-    modules = init_modules(config_file)
-    if module in modules:
-        modules[module].start()
-    else:
-        print("Didn't find module {module}".format(module = module))
+def install(ctx, module="", config_file='config.yaml', password=''):
+    selected = select_modules(module, config_file)
+    for m in selected:
+        m.install(password)
+
 
 @task
-def status(ctx, module, config_file='config.yaml'):
-    modules = init_modules(config_file)
-    if module in modules:
-        modules[module].status()
-    else:
-        print("Didn't find module {module}".format(module = module))
-@task
-def stop(ctx, module, config_file='config.yaml'):
-    modules = init_modules(config_file)
-    if module in modules:
-        modules[module].stop()
-    else:
-        print("Didn't find module {module}".format(module = module))
+def start(ctx, module="", config_file='config.yaml'):
+    selected = select_modules(module, config_file)
+    for m in selected:
+        m.start()
+
 
 @task
-def update(ctx, module, config_file='config.yaml'):
-    modules = init_modules(config_file)
-    if module in modules:
-        modules[module].update()
-    else:
-        print("Didn't find module {module}".format(module = module))
+def status(ctx, module="", config_file='config.yaml'):
+    selected = select_modules(module, config_file)
+    for m in selected:
+        m.status()
 
+
+@task
+def stop(ctx, module="", config_file='config.yaml'):
+    selected = select_modules(module, config_file)
+    for m in selected:
+        m.stop()
+
+
+@task
+def update(ctx, module="", config_file='config.yaml'):
+    selected = select_modules(module, config_file)
+    for m in selected:
+        m.update()

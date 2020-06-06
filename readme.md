@@ -1,8 +1,7 @@
 # Content
 
 - `config` Configurations of IPs.
-- `console` Install Portforward, Spark, Collectd, InfluxDB, Grafana, HDFS .
-- `install/gcloud` Google cloud kits for port forwarding.
+- `console` Install Portforward, Spark, Collectd, InfluxDB, Grafana, HDFS.
 - `monitor` Start collecting Perf monitoring data.
 - `test_tasks` Testing spark tasks.
 
