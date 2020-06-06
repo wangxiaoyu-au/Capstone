@@ -1,6 +1,8 @@
 import tempfile
 from datetime import datetime
 from control_lib.control_base import ControlBase
+import os
+from fabric import Connection
 
 class Grafana(ControlBase):
 

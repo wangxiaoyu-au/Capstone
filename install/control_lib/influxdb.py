@@ -1,6 +1,8 @@
 import tempfile
 from datetime import datetime
 from control_lib.control_base import ControlBase
+import os
+from fabric import Connection
 
 class Influxdb(ControlBase):
 
@@ -41,14 +43,14 @@ class Influxdb(ControlBase):
 
         tmp = tempfile.NamedTemporaryFile(mode='w+t', suffix=".conf", delete=False)
         try:
-            lines = open(get_local_path(self._config['influxdb']['config'])).readlines()
+            lines = open(self.get_local_path(self._config['influxdb']['config'])).readlines()
             lines = [ line.replace("{influxdb.port}", str(self._config['influxdb']['port'])) for line in lines ]
             tmp.writelines(lines)
         finally:
             tmp.close()
         
         backup_file = "influxdb.conf.backup." + datetime.now().strftime("%m-%d-%Y-%H-%M-%S")
-        local_backup = get_local_path(backup_file, 'backup')
+        local_backup = self.get_local_path(backup_file, 'backup')
         host.run("mkdir -p /home/" +  self._config['username'] + "/backup")
         remote_backup = "/home/" + self._config['username']  + "/backup/" + backup_file
         print("Backup remote: cp /etc/influxdb/influxdb.conf " + remote_backup)
