@@ -5,9 +5,9 @@ from control_lib.control_base import ControlBase
 class Grafana(ControlBase):
 
     def _get_hosts(self, password=''):
-        private_key = self.get_local_path(os.path.join('private_key', self.config['key']))
-        return [Connection(self.config['grafana']['ip'],
-                    user = self.config['username'], 
+        private_key = self.get_local_path(os.path.join('private_key', self._config['key']))
+        return [Connection(self._config['grafana']['ip'],
+                    user = self._config['username'], 
                     connect_kwargs = {"key_filename":private_key})]
 
 
