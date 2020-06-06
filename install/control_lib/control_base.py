@@ -11,7 +11,7 @@ class ControlBase:
     def get_local_path(self, filename, dir='config'):
         return os.path.join(Path(__file__).resolve().parent.parent.parent, dir, filename)
 
-    def _get_hosts(self):
+    def _get_hosts(self, password=''):
         """Get hosts from configuration"""
         hosts = []
         # Get mapping ports
@@ -47,31 +47,36 @@ class ControlBase:
         pass
 
 
-    def install(self):
-        hosts = self._get_hosts()
+    def install(self, password=''):
+        hosts = self._get_hosts(password='')
         for host in hosts:
+            host.run("hostname")
             self._install(host)
 
 
     def start(self):
         hosts = self._get_hosts()
         for host in hosts:
+            host.run("hostname")
             self._start(host)
 
 
     def status(self):
         hosts = self._get_hosts()
         for host in hosts:
+            host.run("hostname")
             self._status(host)
 
 
     def stop(self):
         hosts = self._get_hosts()
         for host in hosts:
+            host.run("hostname")
             self._update(host)
 
 
     def update(self):
         hosts = self._get_hosts()
         for host in hosts:
+            host.run("hostname")
             self._update(host)

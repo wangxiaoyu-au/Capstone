@@ -4,7 +4,7 @@ from control_lib.control_base import ControlBase
 
 class Grafana(ControlBase):
 
-    def _get_hosts(self):
+    def _get_hosts(self, password=''):
         private_key = self.get_local_path(os.path.join('private_key', self.config['key']))
         return [Connection(self.config['grafana']['ip'],
                     user = self.config['username'], 

@@ -5,7 +5,7 @@ from pathlib import Path
 import os
 from benedict import benedict
 from control_lib.collectd import Collectd
-
+from control_lib.portforward import Portforward
 
 
 def get_local_path(filename, dir='config'):
@@ -22,14 +22,15 @@ def init_modules(config_file):
     config = read_config(config_file)    
     modules = {
         'collectd': Collectd(config),
+        'portforward': Portforward(config),
     }
     return modules
 
 @task
-def install(ctx, module, config_file='config.yaml'):
+def install(ctx, module, config_file='config.yaml', password=''):
     modules = init_modules(config_file)
     if module in modules:
-        modules[module].install()
+        modules[module].install(password)
     else:
         print("Didn't find module {module}".format(module = module))
 
