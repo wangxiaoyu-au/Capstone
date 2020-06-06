@@ -52,32 +52,35 @@ def select_modules(module_names, config_file):
 def install(ctx, module="", config_file='config.yaml', password=''):
     selected = select_modules(module, config_file)
     for m in selected:
+        print("Module name", m.name())
         m.install(password)
+        print()
+
+
+def run_module_action(action, module, config_file):
+    selected = select_modules(module, config_file)
+    for m in selected:
+        print("Run action: {action} in module named {name}".format(action=action, name=m.name())) 
+        func = getattr(m, action)
+        func()
+        print()
 
 
 @task
 def start(ctx, module="", config_file='config.yaml'):
-    selected = select_modules(module, config_file)
-    for m in selected:
-        m.start()
+    run_module_action('start', module, config_file)
 
 
 @task
 def status(ctx, module="", config_file='config.yaml'):
-    selected = select_modules(module, config_file)
-    for m in selected:
-        m.status()
+    run_module_action('statu', module, config_file)
 
 
 @task
 def stop(ctx, module="", config_file='config.yaml'):
-    selected = select_modules(module, config_file)
-    for m in selected:
-        m.stop()
+    run_module_action('stop', module, config_file)
 
 
 @task
 def update(ctx, module="", config_file='config.yaml'):
-    selected = select_modules(module, config_file)
-    for m in selected:
-        m.update()
+    run_module_action('update', module, config_file)

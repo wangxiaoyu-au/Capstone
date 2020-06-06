@@ -8,8 +8,10 @@ class ControlBase:
     def __init__(self, config):
         self._config = config
 
+
     def get_local_path(self, filename, dir='config'):
         return os.path.join(Path(__file__).resolve().parent.parent.parent, dir, filename)
+
 
     def _get_hosts(self, password=''):
         """Get hosts from configuration"""
@@ -20,6 +22,10 @@ class ControlBase:
             hosts.append('localhost:' + str(port))
         print("user", self._config['username'], "key_filename", private_key)
         return Group(*hosts, user = self._config['username'], connect_kwargs = {"key_filename":private_key}) 
+
+    
+    def name(self):
+        return self.__class__.__name__
 
 
     def _install(self, host):
