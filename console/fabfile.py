@@ -40,11 +40,11 @@ def select_modules(module_names, config_file):
     filtered = []
     if module_names == "":
         return all_modules.values()
-    for module in module_names.split(','):
-        if module in modules:
-            filtered.append(module)
+    for name in module_names.split(','):
+        if name in all_modules:
+            filtered.append(all_modules[name])
         else:
-            print("Didn't find module {module}".format(module = module))
+            print("Didn't find module {module}".format(module = name))
     return filtered
 
 
