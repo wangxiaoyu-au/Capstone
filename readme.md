@@ -50,34 +50,20 @@ sudo apt install libelf-dev libunwind-dev libaudit-dev libclang-dev
 
 ### Install Portforward/Spark/Collectd/InfluxDB/Grafana/HDFS
 
+#### Step 1: set up portforward
+
 ```bash
 cd console
-fab install # Install everything
-
-# If install single module
-
-fab install --module <module name>
-
-# Such as 
-fab install --module spark
-fab install --module collectd
-fab install --module grafana
-fab install --module influxdb
-
-# If install multiple moduels
-fab install --module <module name1>,<module name2>,...
-
-# Such as
-fab install --module spark,collectd
-```
-
-## Enable Local Portforward
-
-```bash
+fab install --module portforward
 fab start --module portforward
 ```
 
-## Configure InfluxDB
+#### Setp 2: Install Spark/Collectd/InfluxDB/Grafana
+```
+fab install --module spark,collectd,grafana,influxdb,pip
+```
+
+#### Setp 3: Configure InfluxDB
 
 After installation, there are some manual steps need to be taken.
 
@@ -99,7 +85,7 @@ exit
 exit
 ```
 
-## Update collectd & InfluxDB configuration
+#### Setp 4: Update collectd & InfluxDB configuration
 
 Configuration files are located in the configuration file are located in [config/*.conf.template](../config/).
 
@@ -107,20 +93,24 @@ Configuration files are located in the configuration file are located in [config
 fab update --module collectd,influxdb
 ```
 
-## Stop & Start everything
+#### Setp 5: Stop & Start everything
 
 ```bash
-fab stop
-fab start
+fab stop --module spark,collectd,grafana,influxdb
+fab start --module spark,collectd,grafana,influxdb
 ```
 
-## Check module status
+#### Setp 6: Check module status
 
 ```bash
-# Command
+fab status
+
+# Checking single or multiple module status
 fab status --module <module name 1>,<module name 2>...
 # Such as
 fab status --module collectd
+# Or
+fab status --module influxdb,grafana
 ```
 
 ### Submit Test Spark Tasks

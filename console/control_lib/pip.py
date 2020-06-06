@@ -31,17 +31,17 @@ class Pip(ControlBase):
             host.run("pip3 install {0} --user".format(package))
 
 
-    def _start(self):
+    def start(self):
         print("Nothing need to be started")
 
 
-    def stop(self, host):
+    def stop(self):
         print("Nothing need to be stopped")
 
 
-    def _status(self, host):
+    def status(self):
         print("Nothing need to be showed")
 
 
-    def _update(self, host):
+    def update(self):
         print("Nothing need to be updated")

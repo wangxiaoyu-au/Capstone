@@ -73,7 +73,7 @@ def start(ctx, module="", config_file='config.yaml'):
 
 @task
 def status(ctx, module="", config_file='config.yaml'):
-    run_module_action('statu', module, config_file)
+    run_module_action('status', module, config_file)
 
 
 @task

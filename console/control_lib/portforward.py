@@ -79,5 +79,5 @@ class Portforward(ControlBase):
                 print("Running: ", process.pid, cmdline)
 
 
-    def _update(self, host):
+    def update(self):
         print("Nothing need to be updated")
