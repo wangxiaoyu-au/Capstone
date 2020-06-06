@@ -27,20 +27,20 @@ class Collectd(ControlBase):
 
         tmp = tempfile.NamedTemporaryFile(mode='w+t', suffix=".conf", delete=False)
         try:
-            lines = open(get_local_path(cfg['collectd']['config'])).readlines()
-            lines = [ line.replace("{influxdb.ip}", str(cfg['influxdb']['ip'])) for line in lines ]
-            lines = [ line.replace("{influxdb.port}", str(cfg['influxdb']['port'])) for line in lines ]
+            lines = open(self.get_local_path(self._config['collectd']['config'])).readlines()
+            lines = [ line.replace("{influxdb.ip}", str(self._config['influxdb']['ip'])) for line in lines ]
+            lines = [ line.replace("{influxdb.port}", str(self._config['influxdb']['port'])) for line in lines ]
             tmp.writelines(lines)
         finally:
             tmp.close()
     
         backup_file = "collectd.conf.backup." + datetime.now().strftime("%m-%d-%Y-%H-%M-%S")
         local_backup = self.get_local_path(backup_file, 'backup')
-        host.run("mkdir -p /home/" +  cfg['username'] + "/backup")
-        remote_backup = "/home/" + cfg['username']  + "/backup/" + backup_file
+        host.run("mkdir -p /home/" +  self._config['username'] + "/backup")
+        remote_backup = "/home/" + self._config['username']  + "/backup/" + backup_file
         print("Backup remote: cp /etc/collectd/collectd.conf " + remote_backup)
         host.run("sudo cp /etc/collectd/collectd.conf " + remote_backup)
-        host.run("sudo chown " + cfg['username'] + ":"+ cfg['username'] + " " + remote_backup)
+        host.run("sudo chown " + self._config['username'] + ":"+ self._config['username'] + " " + remote_backup)
         print("Download to local: " + local_backup)
         host.get(remote_backup, local_backup)   
     
