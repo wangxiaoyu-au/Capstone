@@ -1,6 +1,10 @@
 ---
 key: "dev_key"
 username: "xiaoyu"
+hdfs:
+  master: "192.168.122.247"
+  # node1: "192.168.122.246"
+  # ...
 grafana: 
   ip: "192.168.122.3"
 # Influx database address for collectd

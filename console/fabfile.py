@@ -10,6 +10,7 @@ from control_lib.grafana import Grafana
 from control_lib.influxdb import Influxdb
 from control_lib.spark import Spark
 from control_lib.pip import Pip
+from control_lib.hdfs import Hdfs
 
 
 def get_local_path(filename, dir='config'):
@@ -31,6 +32,7 @@ def init_modules(config_file):
         'influxdb': Influxdb(config),
         'spark': Spark(config),
         'pip': Pip(config),
+        'hdfs': Hdfs(config),
     }
     return modules
 
