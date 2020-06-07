@@ -60,7 +60,7 @@ fab start --module portforward
 
 #### Setp 2: Install Spark/Collectd/InfluxDB/Grafana
 ```
-fab install --module spark,collectd,grafana,influxdb,pip
+fab install --module spark,collectd,grafana,influxdb,pip,hdfs
 ```
 
 #### Setp 3: Configure InfluxDB
@@ -96,8 +96,8 @@ fab update --module collectd,influxdb
 #### Setp 5: Stop & Start everything
 
 ```bash
-fab stop --module spark,collectd,grafana,influxdb
-fab start --module spark,collectd,grafana,influxdb
+fab stop --module spark,collectd,grafana,hdfs
+fab start --module spark,collectd,grafana,influxdb,hdfs
 ```
 
 #### Setp 6: Check module status
@@ -129,8 +129,3 @@ cd spark_test_tasks2
 # Or
 ./submit-2.8g-all-cores.sh
 ```
-
-
-
-
-

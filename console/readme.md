@@ -19,37 +19,40 @@ fab install --module pip
 fab install --module influxdb
 # Install Spark
 fab install --module spark
+# Install HDFS
+fab install --module hdfs
 ```
 
 ## Start
 
-```
+```bash
 fab start --module collectd
 fab start --module grafana
 fab start --module influxdb
 fab start --module spark
 fab start --module portforward
 ```
-```
 
 ## Stop
 
-```
+```bash
 fab stop --module collectd
 fab stop --module grafana
 fab stop --module influxdb
 fab stop --module spark
 fab stop --module portforward
+fab stop --module hdfs
 ```
 
 ## Status
 
-```
+```bash
 fab status --module collectd
 fab status --module grafana
 fab status --module influxdb
 fab status --module spark
 fab status --module portforward
+fab status --module hdfs
 ```
 
 
@@ -57,7 +60,8 @@ fab status --module portforward
 
 Update configurations, the configuration file are located in [config/*.conf.template](../config/).
 
-```
-fab status --module collectd
-fab status --module influxdb
+```bash
+fab update --module collectd
+fab update --module influxdb
+fab update --module hdfs
 ```
