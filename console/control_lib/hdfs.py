@@ -2,7 +2,7 @@ import tempfile
 from datetime import datetime
 from control_lib.control_base import ControlBase
 import os
-from fabric import Connection
+from fabric import Group
 
 
 class Hdfs(ControlBase):
@@ -14,7 +14,7 @@ class Hdfs(ControlBase):
         # First is master
         hosts.append(hdfs['master'] + ":22")
         for name, ip in hdfs.items():
-            if name != master:
+            if name != 'master':
                 hosts.append(ip + ":22")
 
         return Group(*hosts, user = self._config['username'], connect_kwargs = {"key_filename":private_key})
@@ -61,18 +61,18 @@ class Hdfs(ControlBase):
         host.run("echo \""  + master_pub_key +  "\" >>  ~/.ssh/authorized_keys")
 
 
-    def start(self, host):
+    def start(self):
         hosts = self._get_hosts()
         hosts[0].run('/usr/local/hadoop/sbin/start-dfs.sh')
 
 
-    def status(self, host):
+    def status(self):
         hosts = self._get_hosts()
         hosts[0].run('jps')
         hosts[0].run('/usr/local/hadoop/bin/hdfs dfsadmin -report')
 
 
-    def stop(self, host):
+    def stop(self):
         hosts = self._get_hosts()
         hosts[0].run('/usr/local/hadoop/sbin/stop-dfs.sh')
 
@@ -86,7 +86,8 @@ class Hdfs(ControlBase):
             self._upload(host, "hadoop/mapred-site.xml.template", "/usr/local/hadoop/etc/hadoop/mapred-site.xml", master_ip)
             self._upload(host, "hadoop/yarn-site.xml.template", "/usr/local/hadoop/etc/hadoop/yarn-site.xml", master_ip)
 
-        hosts[0].run("sudo rm -f /usr/local/hadoop/etc/hadoop/workers.backup"
+        print("Updating /usr/local/hadoop/etc/hadoop/workers")
+        hosts[0].run("sudo rm -f /usr/local/hadoop/etc/hadoop/workers.backup")
         hosts[0].run("sudo mv /usr/local/hadoop/etc/hadoop/workers /usr/local/hadoop/etc/hadoop/workers.backup")
         for ip in self._config['hdfs'].values():
             hosts[0].run("echo " + ip + " >> /usr/local/hadoop/etc/hadoop/workers")
@@ -100,7 +101,8 @@ class Hdfs(ControlBase):
             tmp.writelines(lines)
         finally:
             tmp.close()
-        
+       
+        print("Updating " + remote_file)
         host.run("sudo rm -f " + remote_file + ".backup")
         host.run("sudo mv {remote_file} {remote_file}.backup".format(remote_file=remote_file))
         
