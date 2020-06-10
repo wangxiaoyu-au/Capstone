@@ -50,7 +50,15 @@ sudo apt install libelf-dev libunwind-dev libaudit-dev libclang-dev
 
 ### Install Portforward/Spark/Collectd/InfluxDB/Grafana/HDFS
 
-#### Step 1: set up portforward
+#### Step 0: Set up execution evnironment
+
+```bash
+source .fabenv/bin/activate
+```
+
+#### Step 1: Set up portforward
+
+For new Spark cluster, update [config.yaml](config/config.yaml), then
 
 ```bash
 cd console
