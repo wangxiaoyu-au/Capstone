@@ -122,6 +122,8 @@ LoadPlugin disk
 #LoadPlugin gps
 #LoadPlugin hugepages
 #LoadPlugin hddtemp
+# See metrics meaning https://docs.signalfx.com/en/latest/integrations/agent/monitors/collectd-interface.html
+# https://docs.signalfx.com/en/latest/integrations/agent/monitors/collectd-interface.html
 LoadPlugin interface
 #LoadPlugin ipc
 #LoadPlugin ipmi
