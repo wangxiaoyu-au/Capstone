@@ -4,7 +4,7 @@ import org.apache.spark.ml.feature.Tokenizer
 import org.apache.spark.ml.feature.StopWordsRemover
 import org.apache.spark.ml.Pipeline
 import org.apache.spark.ml.feature.StringIndexer
-import org.apache.spark.ml.classification.RandomForestClassifier
+import org.apache.spark.ml.classification.DecisionTreeClassifier
 import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
 import org.apache.spark.sql.functions.udf
 
@@ -19,7 +19,7 @@ object ClassifierApp {
                 option("header","true").
                 option("sep", "\t").
                 csv(train_datafile).
-                limit(10000)
+                limit(5000)
 
         val train_sents1 = train_df.select("genre", "sentence1")
 
@@ -41,7 +41,7 @@ object ClassifierApp {
         val w2v_train_df = splits(0)
         val w2v_test_df = splits(1)
         val genre2label = new StringIndexer().setInputCol("genre").setOutputCol("label")
-        val rf_classifier = new RandomForestClassifier().setLabelCol("label").setFeaturesCol("avg_word_embed")
+        val rf_classifier = new DecisionTreeClassifier().setLabelCol("label").setFeaturesCol("avg_word_embed")
 
         val rf_classifier_pipeline = new Pipeline().setStages(Array(genre2label,rf_classifier))
         val rf_predictions = rf_classifier_pipeline.fit(w2v_train_df).transform(w2v_test_df)
