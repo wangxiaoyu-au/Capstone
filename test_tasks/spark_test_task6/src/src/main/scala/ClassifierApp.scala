@@ -11,13 +11,15 @@ import org.apache.spark.sql.functions.udf
 object ClassifierApp {
 
     def main(args: Array[String]) {
-        val spark = SparkSession.builder.appName("spark session example").getOrCreate()
+        var name = args.collectFirst{case a if a.contains("--name") => a.substring(7)}.getOrElse("example")
+        val spark = SparkSession.builder.appName("Classifier " + name).getOrCreate()
 
         val train_datafile = args.collectFirst{case a if a.contains("://") => a}.getOrElse("")
         val train_df = spark.read.
                 option("header","true").
                 option("sep", "\t").
-                csv(train_datafile)
+                csv(train_datafile).
+                limit(10000)
 
         val train_sents1 = train_df.select("genre", "sentence1")
 
