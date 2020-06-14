@@ -31,7 +31,7 @@ spark = SparkSession \
     .getOrCreate()
 
 train_datafile = get_args().input
-train_df = spark.read.csv(train_datafile,header=True,sep='\t')
+train_df = spark.read.csv(train_datafile,header=True,sep='\t').limit(90000)
 
 
 # using 1000 records as a small set debugging data

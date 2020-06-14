@@ -19,29 +19,50 @@ from pyspark.ml.feature import VectorAssembler
 import numpy as np
 import pyspark.sql.functions as F
 from pyspark.sql.types import *
+import re
 from pyspark.ml.feature import Word2Vec, HashingTF, IDF, Tokenizer, CountVectorizer, StopWordsRemover
 from pyspark.ml.clustering import KMeans, LDA, BisectingKMeans
 from pyspark.ml import Pipeline
 from pyspark import SparkContext
-from func_utils import *
+from ml_utils import *
 import argparse
+
+
+sc = SparkContext(appName="Average Rating per Genre")
+#parser = argparse.ArgumentParser()
+#parser.add_argument("--input", help="the input path",
+#                    default='~/comp5349/lab_commons/week5/')
+
+#args = parser.parse_args()
+
+#sc.install_pypi_package("scikit_learn")
+
 
 spark = SparkSession \
     .builder \
-    .appName("task 5: DecisionTreeClassifier") \
+    .appName("comp5349 sentences clustering") \
     .getOrCreate()
 
-train_datafile = get_args().input
-train_df = spark.read.csv(train_datafile,header=True,sep='\t').limit(100000)
+train_datafile = "hdfs://192.168.122.247:9000/spark_test/data/train.tsv"  #args.input
+train_df = spark.read.csv(train_datafile,header=True,sep='\t')
+
 
 # using 1000 records as a small set debugging data
 train_sents1 = train_df.select('genre', 'sentence1')
 train_sents2 = train_df.select('genre', 'sentence2')
 # train_sents1.show(5)
 
+
+def lower_folding(x):    
+    return x.lower()
+
 udf_lower = F.udf(lower_folding, StringType() )
 train_sents1_lower = train_sents1.withColumn('lower_sents', udf_lower('sentence1') )
 # train_sents1_lower.show(5)
+
+def remove_punctuation_re(x):
+    x = re.sub(r'[^\w\s]','',x)    
+    return x
 
 udf_rv_punc = F.udf(remove_punctuation_re, StringType() )
 train_sents1_rv_punc = train_sents1_lower.withColumn('rv_punc_sents', udf_rv_punc('lower_sents') )
@@ -56,11 +77,11 @@ doc2vecs_df = doc2vec_model.transform(train_sents1_rv_punc)
 w2v_train_df, w2v_test_df = doc2vecs_df.randomSplit([0.8, 0.2])
 
 from pyspark.ml.feature import StringIndexer
-from pyspark.ml.classification import DecisionTreeClassifier
+from pyspark.ml.classification import RandomForestClassifier
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 
 genre2label = StringIndexer(inputCol="genre", outputCol="label")
-rf_classifier = DecisionTreeClassifier(labelCol="label", featuresCol="avg_word_embed")
+rf_classifier = RandomForestClassifier(labelCol="label", featuresCol="avg_word_embed")
 
 rf_classifier_pipeline = Pipeline(stages=[genre2label,rf_classifier])
 rf_predictions = rf_classifier_pipeline.fit(w2v_train_df).transform(w2v_test_df)
