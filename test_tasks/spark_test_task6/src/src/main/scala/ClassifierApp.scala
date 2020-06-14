@@ -19,7 +19,7 @@ object ClassifierApp {
                 option("header","true").
                 option("sep", "\t").
                 csv(train_datafile).
-                limit(1000)
+                limit(10000)
 
         val train_sents1 = train_df.select("genre", "sentence1")
 
